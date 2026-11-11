@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>AI 활용능력 테스트 제출물 - 소모품 재고관리 프로그램</title>
+{% include "_style.html" %}
+</head>
+<body>
+
+<!-- ───────────── ① 보고서 (1페이지) ───────────── -->
+<section class="part report">
+  <header class="title">
+    <div>
+      <p class="eyebrow">2026 하반기 공개채용 · AI 활용능력 테스트 · 지원 분야: 신입 – IT개발팀</p>
+      <h1>소모품 재고관리 프로그램 개발 보고서</h1>
+    </div>
+    <p class="meta">
+      {% if applicant %}<b>지원자</b> {{ applicant }}<br>{% endif %}
+      <b>AI 도구</b> Claude Code (VS Code 확장) &nbsp;<b>작성일</b> {{ today }}<br>
+      <b>구현</b> Python · Flask · openpyxl &nbsp;<b>실행</b> Docker
+      {% if links %}<br><b>소스코드</b> <a href="{{ links.repo }}">{{ links.repo|replace("https://", "") }}</a>
+      <br><b>시연 영상 · 사용 가이드</b> <a href="{{ links.site }}">{{ links.site|replace("https://", "") }}</a>{% endif %}
+    </p>
+  </header>
+
+  <h2><b class="number">1</b>프로그램 개요</h2>
+  <p class="lead">회사에서 쓰던 <strong>엑셀 파일을 그대로 데이터 원본</strong>으로 두고, 조회와 입·출고는 웹 화면에서 처리하는 프로그램입니다.
+    엑셀을 직접 고칠 때 생기는 실수(잘못된 수량 입력, 재고보다 많은 출고, 변경 기록 누락)를 프로그램이 막도록 했습니다.</p>
+  <table class="grid">
+    <tr><th>재고 조회 (필수)</th><td>품목별 현재 재고를 표로 표시 · 품목 검색 · 품목 수와 총 재고 요약 · 재고 0개인 품목은 빨간색</td></tr>
+    <tr><th>재고 변경 (필수)</th><td>품목 줄에 수량을 넣고 [입고] 또는 [출고]를 누르면 재고가 바뀌고 엑셀 파일에 즉시 저장</td></tr>
+    <tr><th>오류 방지</th><td>재고보다 많은 출고와 0·음수·문자 수량은 거부하고 이유를 안내 · 저장에 실패해도 원본 엑셀은 보존</td></tr>
+    <tr><th>이력 기록</th><td>모든 입·출고를 엑셀 '입출고이력' 시트에 일시, 수량, 변경 전후 재고와 함께 자동 기록</td></tr>
+    <tr><th>구조 · 실행</th><td>재고 로직(<code>inventory.py</code>)과 화면(<code>app.py</code>)을 분리해 로직만 따로 테스트 · 실행은 <code>docker compose up -d</code> 한 줄</td></tr>
+  </table>
+
+  <h2><b class="number">2</b>AI 활용 내역 <small>내가 지시한 것 → AI가 한 일</small></h2>
+  <table class="grid">
+    <tr><th>요구사항 파악</th><td>과제 안내 이미지를 그대로 입력 → AI가 필수 기능 2가지, 제출물 3종, 마감 조건을 정리</td></tr>
+    <tr><th>설계 · 구현</th><td>과제 해결을 지시 → AI가 기존 엑셀 파일을 원본으로 유지하는 구조를 설계하고 Python으로 구현</td></tr>
+    <tr><th>실행 환경 지정</th><td>Docker 사용을 지시 → AI가 데스크톱 창 방식이던 설계를 웹 방식(Flask)으로 바꾸고 Dockerfile·compose 작성</td></tr>
+    <tr><th>검증 · 사용 가이드</th><td>Playwright 캡처와 사용 가이드 작성을 지시 → AI가 사용자 흐름대로 실제 브라우저를 조작해 동작을 확인하고,
+      그 화면으로 가이드를 작성. 자동 테스트 {{ test_count }}건도 AI가 작성해 컨테이너에서 실행(전부 통과)</td></tr>
+    <tr><th>문서화</th><td>AI가 이 보고서의 초안을 쓰고, 보고서·소스코드·프롬프트를 PDF 1개로 묶는 과정을 스크립트로 자동화</td></tr>
+  </table>
+  <p class="point"><strong>활용 방식</strong> 코드 조각을 받아 붙여 넣는 대신, 파일 작성·실행·테스트까지 수행하는 에이전트형 AI에 목표와 실행 환경, 검증 방법을 지시했습니다.
+    결과는 AI의 설명이 아니라 테스트 통과 여부와 실제 실행 화면으로 확인할 수 있게 했습니다.</p>
+
+  <h2><b class="number">3</b>프로그램 실행 화면</h2>
+  <div class="shots">
+    <div class="col">
+      <figure><img class="screen" src="{{ shots.report_view }}" alt="재고 조회 화면">
+        <figcaption><b>(가) 재고 조회</b> 과제 예시 데이터(무선마우스 30개, 키보드 20개, USB 메모리 50개)를 불러온 첫 화면</figcaption></figure>
+      <figure><img class="screen" src="{{ shots.report_error }}" alt="재고 부족 안내 화면">
+        <figcaption><b>(다) 오류 방지</b> 재고가 20개인 키보드를 25개 출고하려 하면 거부하고, 재고는 그대로 둡니다.</figcaption></figure>
+    </div>
+    <div class="col">
+      <figure><img class="screen" src="{{ shots.report_change }}" alt="입고와 출고를 처리한 화면">
+        <figcaption><b>(나) 재고 변경</b> 무선마우스 10개 입고(30→40), USB 메모리 5개 출고(50→45) 후의 화면. 완료 알림이 뜨고 이력이 자동으로 쌓입니다.
+          {% if with_guide %}전체 사용 흐름은 부록 '사용 가이드'에 화면과 함께 정리했습니다.{% endif %}</figcaption></figure>
+    </div>
+  </div>
+
+  <h2><b class="number">4</b>검증 결과와 한계</h2>
+  <div class="two">
+    <div><strong>자동 테스트 {{ test_count }}건 전부 통과</strong> 입·출고 계산, 재고 부족과 잘못된 수량 거부, 이력 기록, 엑셀에서 직접 고친 값 반영, 동시 요청, 저장 실패 시 원본 보존, 화면 동작</div>
+    <div><strong>한계와 다음 단계</strong> 엑셀 파일 저장은 소수 인원이 쓰는 규모에 맞춘 선택입니다. 사용자가 늘면 저장소를 DB로 바꾸고, 처리한 사람이 남도록 로그인 기능을 더해야 합니다.</div>
+  </div>
+</section>
+
+<!-- ───────────── ② 소스코드 ───────────── -->
+<section class="part">
+  <h1 class="part-title">② 프로그램 소스코드</h1>
+  <p>실행: <code>docker compose up -d</code> 후 브라우저에서 <code>http://localhost:8000</code> 접속
+    &nbsp;·&nbsp; 테스트: <code>docker compose run --rm web python -m unittest -v</code>
+    {% if links %}<br>같은 소스가 <a href="{{ links.repo }}">{{ links.repo|replace("https://", "") }}</a> 에 있습니다.{% endif %}</p>
+  <table class="grid files">
+    {% for item in sources %}
+    <tr><th>{{ item.file }}</th><td>{{ item.role }}</td><td>{{ item.lines|length }}줄</td></tr>
+    {% endfor %}
+  </table>
+  {% for item in sources %}
+  <h3 class="file">{{ item.file }}<span>{{ item.role }}</span></h3>
+  <pre class="code">{% for line in item.lines %}<span class="l">{{ line }}</span>{% endfor %}</pre>
+  {% endfor %}
+</section>
+
+<!-- ───────────── ③ 프롬프트 ───────────── -->
+<section class="part">
+  <h1 class="part-title">③ 핵심 프롬프트</h1>
+  <p>사용 도구: Claude Code (VS Code 확장) · 결과물을 만들 때 입력한 프롬프트입니다.</p>
+  {% if prompt_images %}
+    {% for image in prompt_images %}
+    <figure class="prompt"><figcaption>프롬프트 {{ loop.index }}</figcaption><img src="{{ image }}" alt="프롬프트 {{ loop.index }} 캡처"></figure>
+    {% endfor %}
+  {% else %}
+  <ol class="prompts">
+    {% for text, note in prompt_texts %}
+    <li><q>{{ text }}</q>{% if note %}<small>{{ note }}</small>{% endif %}</li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+</section>
+
+<!-- ───────────── 부록: 사용 가이드 ───────────── -->
+{% if with_guide %}
+<section class="part guide">
+  <h1 class="part-title">부록 · 사용 가이드</h1>
+  {% include "_guide.html" %}
+</section>
+{% endif %}
+
+</body>
+</html>

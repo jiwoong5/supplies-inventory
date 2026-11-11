@@ -1,0 +1,9 @@
+.claude/
+data/
+__pycache__/
+report/.venv/
+report/out/
+report/prompts/*.png
+report/prompts/*.jpg
+report/prompts/*.jpeg
+AI활용능력테스트_제출.pdf

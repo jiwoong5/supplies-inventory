@@ -1,0 +1,9 @@
+services:
+  web:                          # 재고관리 프로그램:  docker compose up -d  →  http://localhost:8000
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data            # 엑셀 파일 보관 폴더. PC의 data 폴더에서 엑셀로 그대로 열어 볼 수 있다
+    environment:
+      INVENTORY_FILE: /data/소모품_재고.xlsx

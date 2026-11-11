@@ -1,0 +1,161 @@
+{# 사용 가이드 본문. 단독 문서(guide.html)와 제출용 PDF의 부록(submission.html)에서 함께 쓴다. #}
+<p class="lead">마우스, 키보드, USB 같은 소모품의 재고를 확인하고 입고·출고를 기록하는 프로그램입니다.
+  내용은 엑셀 파일(<code>data/소모품_재고.xlsx</code>)에 그대로 저장됩니다.
+  아래 화면은 실제 프로그램을 이 순서대로 조작하면서 캡처한 것이며, 빨간 번호는 설명의 번호와 같습니다.</p>
+<ol class="flow">
+  <li>접속</li><li>조회</li><li>검색</li><li>입고</li><li>출고</li>
+  <li>재고 부족</li><li>품목 추가</li><li>이력</li><li>엑셀 확인</li>
+</ol>
+
+<section class="step">
+  <div class="how">
+    <h2><b class="number">1</b>접속하기</h2>
+    <p>브라우저 주소창에 <code>http://localhost:8000</code> 을 입력합니다. 화면은 네 부분으로 되어 있습니다.</p>
+    <ol class="marks">
+      <li><strong>재고 현황</strong> 품목별 현재 재고</li>
+      <li><strong>입고 / 출고</strong> 수량을 넣고 버튼을 누르는 칸</li>
+      <li><strong>품목 추가</strong> 새 소모품 등록</li>
+      <li><strong>최근 입출고 이력</strong> 처리한 기록</li>
+    </ol>
+    <p class="tip">프로그램은 프로젝트 폴더에서 <code>docker compose up -d</code> 를 한 번 실행하면 켜지고,
+      <code>docker compose down</code> 으로 끕니다.</p>
+  </div>
+  <div class="see"><img class="screen" src="{{ shots.overview }}" alt="첫 화면의 구성"></div>
+</section>
+
+<section class="step">
+  <div class="how">
+    <h2><b class="number">2</b>재고 조회하기</h2>
+    <ol class="marks">
+      <li><strong>현재 재고</strong> 열에서 품목별 수량을 확인합니다.</li>
+      <li>오른쪽 위에 전체 품목 수와 총 재고가 표시됩니다.</li>
+    </ol>
+    <p class="tip">재고가 0개인 품목은 빨간색으로 표시됩니다. 다른 사람이 처리한 내용은 새로고침(F5)하면 보입니다.</p>
+  </div>
+  <div class="see"><img class="screen" src="{{ shots.view }}" alt="재고 조회 화면"></div>
+</section>
+
+<section class="step">
+  <div class="how">
+    <h2><b class="number">3</b>품목 검색하기</h2>
+    <ol class="marks">
+      <li>검색창에 품목 이름의 일부를 입력하고 [검색]을 누릅니다. 예: <code>usb</code></li>
+    </ol>
+    <p>영문 대소문자는 구분하지 않습니다. 전체 목록으로 돌아가려면 검색창을 비우고 [검색]을 누릅니다.</p>
+  </div>
+  <div class="see"><img class="screen" src="{{ shots.search }}" alt="usb로 검색한 화면"></div>
+</section>
+
+<section class="step">
+  <div class="how">
+    <h2><b class="number">4</b>입고 처리하기</h2>
+    <h3>누르기 전</h3>
+    <ol class="marks">
+      <li>입고할 품목 줄의 수량 칸에 숫자를 입력합니다. 예: 무선마우스 10</li>
+      <li>[입고]를 누릅니다.</li>
+    </ol>
+    <h3>누른 뒤</h3>
+    <ol class="marks">
+      <li>초록색 완료 알림이 뜹니다.</li>
+      <li>재고가 30개에서 40개로 바뀝니다. 이때 엑셀 파일에도 저장됩니다.</li>
+    </ol>
+    <p class="tip">실수로 처리되지 않도록 Enter 키로는 처리되지 않습니다. [입고] 또는 [출고] 버튼을 눌러야 합니다.</p>
+  </div>
+  <div class="see">
+    <figure><figcaption>누르기 전</figcaption><img class="screen" src="{{ shots.in_before }}" alt="수량 10을 입력한 화면"></figure>
+    <figure><figcaption>누른 뒤</figcaption><img class="screen" src="{{ shots.in_after }}" alt="입고가 완료된 화면"></figure>
+  </div>
+</section>
+
+<section class="step">
+  <div class="how">
+    <h2><b class="number">5</b>출고 처리하기</h2>
+    <p>입고와 같은 방법으로 수량을 입력하고, 이번에는 [출고]를 누릅니다. 예: USB 메모리 5</p>
+    <ol class="marks">
+      <li>완료 알림에 처리 내용이 표시됩니다.</li>
+      <li>재고가 50개에서 45개로 줄어듭니다.</li>
+    </ol>
+  </div>
+  <div class="see"><img class="screen" src="{{ shots.out_after }}" alt="출고가 완료된 화면"></div>
+</section>
+
+<section class="step">
+  <div class="how">
+    <h2><b class="number">6</b>재고보다 많이 출고하려 할 때</h2>
+    <p>재고가 20개인 키보드를 25개 출고하려 한 경우입니다.</p>
+    <ol class="marks">
+      <li>빨간색 안내가 뜨고 처리되지 않습니다.</li>
+      <li>재고는 20개 그대로입니다.</li>
+    </ol>
+    <p class="tip">수량은 1 이상의 정수만 처리됩니다. 빈칸, 0, 음수, 소수는 버튼을 눌러도 처리되지 않습니다.</p>
+  </div>
+  <div class="see"><img class="screen" src="{{ shots.error }}" alt="재고 부족 안내 화면"></div>
+</section>
+
+<section class="step">
+  <div class="how">
+    <h2><b class="number">7</b>새 품목 추가하기</h2>
+    <h3>누르기 전</h3>
+    <ol class="marks">
+      <li>'품목 추가' 칸에 새 품목 이름을 입력합니다. 예: HDMI 케이블</li>
+      <li>[추가]를 누릅니다.</li>
+    </ol>
+    <h3>누른 뒤</h3>
+    <ol class="marks">
+      <li>등록 알림이 뜹니다.</li>
+      <li>새 품목이 재고 0개로 목록 맨 아래에 생깁니다. 수량은 4번처럼 입고로 넣습니다.</li>
+    </ol>
+    <p class="tip">이미 있는 이름으로는 등록되지 않습니다.</p>
+  </div>
+  <div class="see">
+    <figure><figcaption>누르기 전</figcaption><img class="screen" src="{{ shots.add_before }}" alt="새 품목 이름을 입력한 화면"></figure>
+    <figure><figcaption>누른 뒤</figcaption><img class="screen" src="{{ shots.add_after }}" alt="새 품목이 등록된 화면"></figure>
+  </div>
+</section>
+
+<section class="step">
+  <div class="how">
+    <h2><b class="number">8</b>입출고 이력 확인하기</h2>
+    <p>화면 아래에 최근 10건이 최신순으로 표시됩니다.</p>
+    <ol class="marks">
+      <li><strong>구분</strong> 입고, 출고, 등록 중 무엇인지</li>
+      <li><strong>재고 변화</strong> 처리 전 → 처리 후 재고</li>
+    </ol>
+    <p class="tip">잘못 처리했다면 반대로 한 번 더 처리합니다. 예: 잘못 입고한 10개는 10개 출고. 바로잡은 과정까지 이력에 남습니다.</p>
+  </div>
+  <div class="see"><img class="screen" src="{{ shots.history }}" alt="최근 입출고 이력"></div>
+</section>
+
+<section class="step">
+  <div class="how">
+    <h2><b class="number">9</b>엑셀 파일로 확인하기</h2>
+    <p>모든 내용은 <code>data</code> 폴더의 <code>소모품_재고.xlsx</code> 에 저장됩니다. Excel로 열면 시트가 두 개 있습니다.
+      오른쪽은 위 1~8번을 마친 뒤 파일에 실제로 저장된 내용입니다.</p>
+    <p class="tip">'재고' 시트의 수량은 Excel에서 직접 고쳐도 됩니다. 저장한 뒤 화면을 새로고침하면 반영됩니다.</p>
+    <p class="tip">Excel에서 파일을 열어 둔 동안에는 조회만 됩니다. 입고·출고를 누르면 저장하지 못했다는 안내가 뜨니,
+      Excel을 닫고 다시 누릅니다.</p>
+  </div>
+  <div class="see">
+    <div class="sheets">
+      {% for name, rows in sheets.items() %}
+      <table class="sheet">
+        <caption>'{{ name }}' 시트</caption>
+        {% for row in rows %}
+        <tr>{% for value in row %}<td>{{ value if value is not none }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </table>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="step" style="display: block">
+  <h2>문제가 생겼을 때</h2>
+  <table class="grid">
+    <tr><th>화면이 열리지 않는다</th><td>프로그램이 꺼져 있습니다. <code>docker compose up -d</code> 로 켭니다.</td></tr>
+    <tr><th>'엑셀 파일에 저장하지 못했습니다' 안내가 뜬다</th><td>Excel에서 <code>소모품_재고.xlsx</code> 를 닫고 다시 누릅니다.</td></tr>
+    <tr><th>수량을 넣고 Enter를 눌러도 반응이 없다</th><td>정상입니다. [입고] 또는 [출고] 버튼을 누릅니다.</td></tr>
+    <tr><th>'재고가 정수가 아닙니다' 안내가 뜨고 목록이 비었다</th><td>Excel에서 안내에 나온 품목의 재고 칸을 숫자로 고칩니다.</td></tr>
+    <tr><th>예시 데이터로 처음부터 다시 시작하고 싶다</th><td><code>data/소모품_재고.xlsx</code> 삭제 후 <code>docker compose restart web</code></td></tr>
+  </table>
+</section>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>소모품 재고관리 프로그램 - 시연 영상과 사용 가이드</title>
+{% include "_style.html" %}
+<style>
+  /* 웹에서 볼 때: 종이 폭으로 가운데 정렬하고, 좁은 화면에서는 설명과 화면을 위아래로 쌓는다 */
+  html { background: #eef1f5; font-size: 10.5pt; }
+  body { max-width: 230mm; margin: 0 auto; padding: 10mm 12mm 16mm; background: #fff; }
+  .guide { font-size: 1rem; }
+  a { color: #0a6ebd; }
+  .links { display: flex; flex-wrap: wrap; gap: 6pt 14pt; margin: 8pt 0 2pt; }
+  .links a { padding: 3pt 10pt; border: 0.8pt solid #0a6ebd; border-radius: 12pt; font-weight: 700; text-decoration: none; }
+  h2.block { margin: 16pt 0 5pt; font-size: 13pt; }
+  video { display: block; width: 100%; max-width: 760px; margin: 0 auto; border: 0.6pt solid #b9c0cb; border-radius: 4pt; background: #f2f4f7; }
+  @media (max-width: 760px) {
+    body { padding: 6mm 5mm 12mm; }
+    .title, .step { flex-direction: column; align-items: stretch; }
+    .meta { text-align: left; white-space: normal; }
+    .step .how { flex-basis: auto; }
+  }
+</style>
+</head>
+<body>
+<section class="guide">
+  <header class="title">
+    <div>
+      <p class="eyebrow">엑셀 파일을 그대로 쓰는 재고 조회 · 입출고 프로그램</p>
+      <h1>소모품 재고관리 프로그램</h1>
+    </div>
+    <p class="meta"><b>구현</b> Python · Flask · openpyxl<br><b>실행</b> Docker &nbsp;<b>갱신일</b> {{ today }}</p>
+  </header>
+  <p class="links">
+    <a href="#demo">시연 영상</a>
+    <a href="#guide">사용 가이드</a>
+    {% if links %}<a href="{{ links.repo }}">소스코드 (GitHub)</a>{% endif %}
+  </p>
+
+  <h2 class="block" id="demo">시연 영상</h2>
+  <p class="lead">실제 프로그램을 Docker로 띄우고 조회 → 입고 → 출고 → 재고 부족 안내 → 품목 추가 → 이력 확인 순서로 조작한 화면입니다. 소리는 없고, 아래쪽 자막이 각 단계를 설명합니다.</p>
+  <video src="demo.webm" controls muted playsinline preload="metadata"></video>
+  <p class="tip">이 페이지는 설명용입니다. 프로그램은 서버(Python)와 엑셀 파일이 필요해 여기서 직접 실행되지는 않습니다.
+    직접 써 보려면 소스코드를 받아 <code>docker compose up -d</code> 를 실행한 뒤 <code>http://localhost:8000</code> 에 접속합니다.</p>
+
+  <h2 class="block" id="guide">사용 가이드</h2>
+  {% include "_guide.html" %}
+</section>
+</body>
+</html>

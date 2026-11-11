@@ -1,0 +1,94 @@
+<style>
+  @page { size: A4; margin: 10mm 12mm 12mm; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html { font: 8.6pt/1.5 "Malgun Gothic", "맑은 고딕", "Noto Sans CJK KR", sans-serif; color: #1b2430; }
+  body { margin: 0; }
+  h1, h2, h3, p, figure, ol { margin: 0; }
+  code { padding: 0 3pt; border-radius: 2pt; background: #eef1f5; font-family: Consolas, "Malgun Gothic", monospace; font-size: 0.95em;
+         white-space: nowrap; }
+  .part { break-before: page; }
+  .part:first-child { break-before: auto; }
+  body.report-only .part:not(.report) { display: none; }
+
+  /* 공통: 제목 · 표 */
+  .eyebrow { color: #0a6ebd; font-size: 8pt; font-weight: 700; letter-spacing: 0.02em; }
+  .title { display: flex; justify-content: space-between; align-items: flex-end; gap: 12pt;
+           padding-bottom: 5pt; border-bottom: 1.6pt solid #1b2430; }
+  .title h1 { font-size: 17pt; line-height: 1.25; }
+  .meta { color: #475467; font-size: 7.6pt; line-height: 1.45; text-align: right; white-space: nowrap; }
+  .meta b { color: #1b2430; }
+  a { color: #0a6ebd; text-decoration: none; }
+  .part-title { margin-bottom: 4pt; padding-bottom: 4pt; border-bottom: 1.6pt solid #1b2430; font-size: 14pt; }
+  .number { display: inline-block; width: 13pt; height: 13pt; margin-right: 4pt; border-radius: 50%; background: #0a6ebd;
+            color: #fff; font-size: 8pt; line-height: 13pt; text-align: center; vertical-align: 1pt; }
+  table.grid { width: 100%; border-collapse: collapse; }
+  table.grid th, table.grid td { padding: 2.2pt 5pt; border: 0.5pt solid #d0d5dd; vertical-align: top; text-align: left; }
+  table.grid th { width: 1%; background: #f2f5f9; font-weight: 700; white-space: nowrap; }
+  img.screen { display: block; width: 100%; border: 0.6pt solid #b9c0cb; border-radius: 3pt; }
+
+  /* ① 보고서 (1페이지) */
+  .report { font-size: 8.3pt; line-height: 1.42; }
+  .report .title h1 { font-size: 15.5pt; }
+  .report h2 { margin: 6pt 0 2.5pt; font-size: 10pt; }
+  .report h2 small { margin-left: 5pt; color: #667085; font-size: 7.6pt; font-weight: 400; }
+  .report table.grid th, .report table.grid td { padding: 1.7pt 5pt; }
+  .lead { margin-bottom: 3pt; }
+  .point { margin-top: 3pt; padding: 2.5pt 7pt; border-left: 2.4pt solid #0a6ebd; background: #eef6fd; }
+  .shots { display: flex; align-items: flex-start; gap: 9pt; }
+  .shots .col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4pt; }
+  .shots figcaption { margin-top: 1.5pt; color: #344054; font-size: 7.6pt; line-height: 1.4; }
+  .shots figcaption b { color: #0a6ebd; }
+  .two { display: flex; gap: 9pt; }
+  .two > div { flex: 1; padding: 2.5pt 7pt; border: 0.5pt solid #d0d5dd; border-radius: 3pt; background: #fafbfc; }
+  .two strong { margin-right: 3pt; }
+
+  /* ② 소스코드 */
+  .files { margin: 5pt 0 9pt; }
+  .files td:last-child { width: 1%; text-align: right; white-space: nowrap; }
+  h3.file { padding: 2.5pt 7pt; border-radius: 3pt 3pt 0 0; background: #1f2a37; color: #fff; font-size: 8.4pt; break-after: avoid; }
+  h3.file span { margin-left: 6pt; color: #b8c2d0; font-weight: 400; }
+  pre.code { margin: 0 0 9pt; padding: 4pt 6pt; border: 0.5pt solid #d0d5dd; border-top: 0; border-radius: 0 0 3pt 3pt;
+             background: #fcfcfd; font: 7.2pt/1.42 Consolas, "Malgun Gothic", monospace;
+             white-space: pre-wrap; word-break: break-all; counter-reset: line; }
+  pre.code .l { display: block; position: relative; padding-left: 3.4em; break-inside: avoid; }
+  pre.code .l::before { counter-increment: line; content: counter(line); position: absolute; left: 0; width: 2.6em;
+                        color: #a0a8b5; text-align: right; }
+
+  /* ③ 프롬프트 */
+  figure.prompt { margin-top: 8pt; break-inside: avoid; }
+  figure.prompt img { display: block; max-width: 100%; max-height: 112mm; border: 0.6pt solid #b9c0cb; border-radius: 3pt; }
+  figure.prompt figcaption { margin-bottom: 2pt; font-weight: 700; }
+  ol.prompts { margin-top: 8pt; padding-left: 16pt; }
+  ol.prompts li { margin-bottom: 7pt; padding-left: 2pt; }
+  ol.prompts q { display: block; padding: 5pt 9pt; border: 0.5pt solid #d0d5dd; border-radius: 3pt; background: #f6f8fa;
+                 font: 9.5pt Consolas, "Malgun Gothic", monospace; quotes: none; }
+  ol.prompts small { display: block; margin-top: 1.5pt; color: #667085; font-size: 7.8pt; }
+
+  /* 사용 가이드 */
+  .guide { font-size: 9pt; }
+  .guide .lead { margin-top: 6pt; }
+  .flow { display: flex; flex-wrap: wrap; gap: 4pt 11pt; margin: 6pt 0 8pt; padding: 0; list-style: none; counter-reset: flow; }
+  .flow li { position: relative; padding: 1.5pt 6.5pt 1.5pt 3pt; border-radius: 10pt; background: #eef6fd; color: #0a4f8a;
+             font-size: 7.8pt; font-weight: 700; counter-increment: flow; }
+  .flow li::before { content: counter(flow); display: inline-block; width: 11pt; height: 11pt; margin-right: 3pt;
+                     border-radius: 50%; background: #0a6ebd; color: #fff; font-size: 7pt; line-height: 11pt; text-align: center; }
+  .flow li:not(:last-child)::after { content: "→"; position: absolute; right: -9.8pt; color: #98a2b3; font-weight: 400; }
+  .step { display: flex; gap: 12pt; padding: 8pt 0; border-top: 0.5pt solid #d0d5dd; break-inside: avoid; }
+  .step .how { flex: 0 0 84mm; }
+  .step .see { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5pt; }
+  .step h2 { margin-bottom: 3pt; font-size: 11pt; }
+  .step h3 { margin: 5pt 0 1pt; color: #475467; font-size: 8pt; }
+  .step figcaption { margin-bottom: 1.5pt; color: #475467; font-size: 7.8pt; font-weight: 700; }
+  ol.marks { margin: 2pt 0; padding: 0; list-style: none; counter-reset: mark; }
+  ol.marks li { position: relative; margin-bottom: 2pt; padding-left: 14pt; counter-increment: mark; }
+  ol.marks li::before { content: counter(mark); position: absolute; left: 0; top: 1.8pt; width: 10.5pt; height: 10.5pt;
+                        border-radius: 50%; background: #e11d48; color: #fff; font-size: 7pt; font-weight: 700;
+                        line-height: 10.5pt; text-align: center; }
+  .tip { margin-top: 4pt; padding: 3pt 7pt; border-left: 2.4pt solid #f59e0b; background: #fff8eb; font-size: 8.2pt; }
+  .sheets { display: flex; flex-direction: column; align-items: flex-start; gap: 7pt; }
+  table.sheet { border-collapse: collapse; font-size: 7.6pt; }
+  table.sheet caption { padding-bottom: 2pt; color: #475467; font-weight: 700; text-align: left; white-space: nowrap; }
+  table.sheet td { padding: 1.2pt 4.5pt; border: 0.5pt solid #b9c0cb; white-space: nowrap; }
+  table.sheet tr:first-child td { background: #e8f3ea; font-weight: 700; }
+  .guide table.grid th { width: 44%; white-space: normal; }
+</style>

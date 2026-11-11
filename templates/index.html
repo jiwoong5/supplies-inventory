@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>소모품 재고 관리</title>
+  <style>
+    :root { --ink: #1b2430; --sub: #667085; --line: #e4e7ec; --in: #1565c0; --out: #c2410c; --bad: #b42318; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f2f4f7; color: var(--ink);
+           font: 15px/1.5 "Malgun Gothic", "맑은 고딕", "Noto Sans CJK KR", "Noto Sans KR", sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 22px 16px 28px; }
+    header, .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    h1 { margin: 0; font-size: 22px; }
+    h2 { margin: 0; font-size: 16px; white-space: nowrap; }
+    .sub { color: var(--sub); font-size: 13px; }
+    .notice { margin: 14px 0 0; padding: 10px 14px; border: 1px solid; border-radius: 8px;
+              font-weight: 600; white-space: pre-line; }
+    .notice.ok { background: #e7f5ec; color: #17663a; border-color: #b7e0c6; }
+    .notice.error { background: #fdecea; color: var(--bad); border-color: #f5c2bd; }
+    .card { margin-top: 14px; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    .bar { padding: 12px 16px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 9px 16px; border-top: 1px solid var(--line); text-align: left; white-space: nowrap; }
+    th { background: #f8f9fb; color: var(--sub); font-size: 13px; font-weight: 600; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .stock { font-size: 17px; font-weight: 700; }
+    .zero { color: var(--bad); }
+    .empty { padding: 18px; text-align: center; color: var(--sub); }
+    form { display: flex; align-items: center; gap: 6px; margin: 0; }
+    td form { justify-content: flex-end; }
+    input { height: 34px; padding: 0 10px; border: 1px solid #cfd4dc; border-radius: 6px; font: inherit; }
+    input[type=text], input[type=search] { width: 160px; }
+    input[type=number] { width: 84px; text-align: right; }
+    button { height: 34px; padding: 0 14px; border: 0; border-radius: 6px; background: #475467; color: #fff;
+             font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer; }
+    button.in { background: var(--in); }
+    button.out { background: var(--out); }
+    .tag { padding: 2px 9px; border-radius: 999px; background: #eef1f5; font-size: 12px; font-weight: 700; }
+    .tag[data-kind="입고"] { background: #e3f0fd; color: var(--in); }
+    .tag[data-kind="출고"] { background: #fdebdc; color: var(--out); }
+    footer { margin-top: 14px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>소모품 재고 관리</h1>
+    <span class="sub">품목 {{ item_count }}종 · 총 재고 {{ "{:,}".format(total) }}개</span>
+  </header>
+
+  {# 입고·출고·품목 추가의 처리 결과(성공/실패) 알림 #}
+  {% for category, message in get_flashed_messages(with_categories=true) %}
+  <p class="notice {{ category }}" role="alert">{{ message }}</p>
+  {% endfor %}
+
+  {# 1) 재고 조회 + 2) 재고 변경: 품목 줄마다 수량을 넣고 [입고]/[출고]를 누른다 #}
+  <section class="card" id="stock">
+    <div class="bar">
+      <h2>재고 현황</h2>
+      <form method="get" action="{{ url_for('index') }}">
+        <input type="search" name="q" value="{{ keyword }}" placeholder="품목 검색" aria-label="품목 검색">
+        <button>검색</button>
+      </form>
+    </div>
+    <table>
+      <thead>
+        <tr><th>품목</th><th class="num">현재 재고</th><th class="num">입고 / 출고</th></tr>
+      </thead>
+      <tbody>
+      {% for name, stock in items %}
+        <tr>
+          <td>{{ name }}</td>
+          <td class="num stock {{ 'zero' if stock <= 0 }}">{{ "{:,}".format(stock) }}개</td>
+          <td>
+            <form method="post" action="{{ url_for('change') }}">
+              <input type="hidden" name="item" value="{{ name }}">
+              <input type="hidden" name="q" value="{{ keyword }}">
+              {# Enter 키로는 제출되지 않게 해, 입고/출고를 반드시 버튼으로 고르게 한다 #}
+              <input type="number" name="quantity" min="1" step="1" required placeholder="수량"
+                     aria-label="{{ name }} 수량" onkeydown="return event.key !== 'Enter'">
+              <button class="in" name="kind" value="입고">입고</button>
+              <button class="out" name="kind" value="출고">출고</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="3" class="empty">{{ "검색 결과가 없습니다." if keyword else "등록된 품목이 없습니다." }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card" id="add">
+    <form class="bar" method="post" action="{{ url_for('add_item') }}">
+      <h2>품목 추가</h2>
+      <span class="sub">재고 0개로 등록됩니다.</span>
+      <span style="flex: 1"></span>
+      <input type="text" name="name" required maxlength="50" placeholder="새 품목 이름" aria-label="새 품목 이름">
+      <button>추가</button>
+    </form>
+  </section>
+
+  {# 3) 입출고 이력: 엑셀 '입출고이력' 시트에 자동으로 쌓인 기록 #}
+  <section class="card" id="history">
+    <div class="bar">
+      <h2>최근 입출고 이력</h2>
+      <span class="sub">최근 10건 · 전체 이력은 엑셀 '입출고이력' 시트</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>일시</th><th>구분</th><th>품목</th><th class="num">수량</th><th class="num">재고 변화</th></tr>
+      </thead>
+      <tbody>
+      {% for time, kind, name, quantity, before, after in history %}
+        <tr>
+          <td>{{ time }}</td>
+          <td><span class="tag" data-kind="{{ kind }}">{{ kind }}</span></td>
+          <td>{{ name }}</td>
+          <td class="num">{{ quantity }}</td>
+          <td class="num">{{ before }} → {{ after }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="5" class="empty">아직 입출고 이력이 없습니다.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <footer class="sub">데이터 원본: {{ file_name }} · 엑셀에서 직접 고친 내용도 새로고침하면 그대로 반영됩니다.</footer>
+</main>
+</body>
+</html>

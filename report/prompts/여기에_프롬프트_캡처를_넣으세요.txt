@@ -1,0 +1,6 @@
+이 폴더에 프롬프트 캡처 이미지(png, jpg)를 넣고
+
+    report/.venv/Scripts/python report/build_pdf.py
+
+를 다시 실행하면 PDF의 '③ 핵심 프롬프트'에 이미지가 들어갑니다.
+파일 이름 순서대로 배치되니 01.png, 02.png 처럼 번호를 붙이세요. (과제 조건: 5개 미만)

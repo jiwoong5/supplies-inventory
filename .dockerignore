@@ -1,0 +1,8 @@
+.claude
+.git
+data
+docs
+report
+__pycache__
+*.pdf
+*.md
